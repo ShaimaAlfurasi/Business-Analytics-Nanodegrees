@@ -1,0 +1,53 @@
+   /* Query 1 */
+
+SELECT ar.Name AS Artist_Name,
+       COUNT(al.Title) AS Album_Count
+FROM Artist ar
+JOIN Album al ON ar.ArtistId = al.ArtistId
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 10;
+
+
+   /* Query 2 */
+
+SELECT ar.Name AS Artist_Name,
+       SUM(il.unitprice) AS Total_Sales
+From Artist ar
+JOIN Album al ON ar.ArtistId = al.ArtistId
+JOIN track tr ON al.AlbumId = tr.AlbumId
+JOIN InvoiceLine il ON tr.TrackId = il.TrackId
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 5;
+
+
+  /* Query 3 */
+
+SELECT cu.FirstName || ' ' || cu.LastName AS Customer_Name,
+      MAX(i.Total) AS Highest_Invoice_Amount
+FROM Customer cu
+JOIN Invoice i ON cu.CustomerId = i.CustomerId
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 4;
+
+
+  /* Query 4 */
+
+WITH AlbumRevenue AS(
+SELECT al.AlbumId,
+       mt.MediaTypeId,
+	   SUM(il.UnitPrice) AS Total_Revenue
+FROM Album al
+JOIN Track tr ON tr.AlbumId = al.AlbumId
+JOIN MediaType mt ON mt.MediaTypeId = tr.MediaTypeId
+JOIN InvoiceLine il ON il.TrackId = tr.TrackId
+GROUP BY 1,2 )
+
+SELECT MediaType.Name AS Media_Type,
+       AVG(ar.Total_Revenue) AS Average_Revenue_Per_Album
+FROM AlbumRevenue ar
+JOIN MediaType ON MediaType.MediaTypeId = ar.MediaTypeId
+GROUP BY 1
+ORDER BY 2 DESC;
